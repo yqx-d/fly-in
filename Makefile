@@ -1,5 +1,5 @@
-FNAME = fly_in.py
-MODULES = flake8 mypy
+FNAME = main.py
+MODULES = flake8 mypy pygame
 
 
 run:
