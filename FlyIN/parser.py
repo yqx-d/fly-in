@@ -38,6 +38,64 @@ class Parser:
             raise Exception(e)
 
     @staticmethod
+    def parse_data(
+        data: list[str]
+    ) -> str:
+
+        if data[0] == "color":
+            try:
+                value = str(data[1]) # noqa
+            except ValueError:
+                raise ValueError(
+                    f"Error: {data[0]}, wrong value: {data[1]}")
+
+        elif data[0] == "zone":
+            ...
+
+        elif data[0] == "max_drones":
+            ...
+
+        elif data[0] == "max_link_capacity":
+            ...
+
+    @staticmethod
+    def parse_metadata(
+        string: str
+    ) -> Union[Dict[str, Any], None]:
+
+        if "[" in string and "]" in string:
+            string = string.rstrip(']')
+            cut_string = string.split('[')
+
+            metadata = cut_string[1].split(' ')
+            dict_metadata: Dict[str, Any] = {}
+
+            try:
+                for all_data in metadata:
+                    data = all_data.split('=')
+                    value = Parser.parse_data(data)
+                    dict_metadata.update({data[0], value})
+
+                if "color" not in dict_metadata:
+                    dict_metadata.update({"color", None})
+
+                if "zone" not in dict_metadata:
+                    dict_metadata.update({"zone", "normal"})
+
+                if "max_drones" not in dict_metadata:
+                    dict_metadata.update({"max_drones", 1})
+
+                if "max_link_capacity" not in dict_metadata:
+                    dict_metadata.update({"max_link_capacity", 1})
+
+            except Exception as e:
+                raise Exception(e)
+
+            return dict_metadata
+
+        return None
+
+    @staticmethod
     def parse_line(
         line: str
     ) -> Union[Dict[Any, Any], None]:
@@ -61,6 +119,10 @@ class Parser:
                             "y": y
                         })
 
+                    metadata = Parser.parse_metadata(lst_line[1])
+                    if metadata:
+                        result.update(metadata)
+
                 except ValueError as e:
                     raise ValueError(e)
 
@@ -74,6 +136,10 @@ class Parser:
                             "name1": name1,
                             "name2": name2
                         })
+
+                    metadata = Parser.parse_metadata(lst_line[1])
+                    if metadata:
+                        result.update(metadata)
 
                 except ValueError as e:
                     raise ValueError(e)
